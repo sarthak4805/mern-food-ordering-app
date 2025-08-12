@@ -1,4 +1,3 @@
-
 import { Auth0Provider, type AppState } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,21 +10,15 @@ const Auth0ProviderWithNavigate = ({ children }: Props) => {
 
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL;
   const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
-  // ✅ Automatically pick correct redirect URL
-  const redirectUri =
-    window.location.hostname === "localhost"
-      ? "http://localhost:5173/auth-callback"
-      : "https://mern-food-ordering-app-frontend-7tgs.onrender.com/auth-callback";
-
   if (!domain || !clientId || !redirectUri || !audience) {
-    throw new Error("Unable to initialise Auth0");
+    throw new Error("Unable to initialise Auth0: Missing env variables");
   }
 
-  // ✅ Preserve page after login if possible
   const onRedirectCallback = (appState?: AppState) => {
-    navigate(appState?.returnTo || window.location.pathname);
+    navigate(appState?.returnTo || "/", { replace: true });
   };
 
   return (
