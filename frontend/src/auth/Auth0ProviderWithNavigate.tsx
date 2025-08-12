@@ -18,7 +18,7 @@ const Auth0ProviderWithNavigate = ({ children }: Props) => {
   }
 
   const onRedirectCallback = (appState?: AppState) => {
-    navigate(appState?.returnTo || "/", { replace: true });
+    navigate(appState?.returnTo || "/auth-callback", { replace: true });
   };
 
   return (
