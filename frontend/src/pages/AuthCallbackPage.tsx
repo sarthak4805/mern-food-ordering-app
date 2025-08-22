@@ -15,12 +15,14 @@ const AuthCallbackPage = () => {
     const returnTo = params.get("returnTo") || "/";
 
     if (user?.sub && user?.email && !hasCreatedUser.current) {
-      createUser({ auth0Id: user.sub, email: user.email });
       hasCreatedUser.current = true;
-    }
 
-    navigate(returnTo, { replace: true });
-  }, [createUser, location.search, user]);
+      createUser({ auth0Id: user.sub, email: user.email })
+        .finally(() => {
+          navigate(returnTo, { replace: true });
+        });
+    }
+  }, [createUser, location.search, navigate, user]);
 
   return <>Loading...</>;
 };

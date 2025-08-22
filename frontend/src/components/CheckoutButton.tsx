@@ -1,4 +1,4 @@
-/*import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import LoadingButton from "./LoadingButton";
@@ -18,7 +18,7 @@ const CheckoutButton = ({ onCheckout, disabled, isLoading }: Props) => {
   const {
     isAuthenticated,
     isLoading: isAuthLoading,
-    loginWithRedirect,
+    loginWithRedirect, 
   } = useAuth0();
 
   const { pathname } = useLocation();
@@ -62,7 +62,7 @@ const CheckoutButton = ({ onCheckout, disabled, isLoading }: Props) => {
         />
       </DialogContent>
     </Dialog>
-  );
+  );  
 };
 
-export default CheckoutButton;*/
+export default CheckoutButton;

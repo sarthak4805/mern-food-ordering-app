@@ -75,20 +75,25 @@ export const useCreateMyRestaurant = () => {
 
 // ✅ UPDATE restaurant
 export const useUpdateMyRestaurant = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
-  const updateRestaurantRequest = async (
-    restaurantFormData: FormData
-  ): Promise<Restaurant> => {
+  const updateRestaurantRequest = async (restaurantFormData: FormData) => {
+    if (!user?.email) {
+      throw new Error("User email is missing");
+    }
+
     const accessToken = await getAccessTokenSilently();
 
-    const response = await fetch(`${API_BASE_URL}/api/my/restaurant`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: restaurantFormData,
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/my/restaurant?email=${encodeURIComponent(user.email)}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // No Content-Type for FormData
+        },
+        body: restaurantFormData,
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to update restaurant");

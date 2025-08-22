@@ -1,5 +1,5 @@
-import { useAuth0 } from "@auth0/auth0-react"
-import { Button } from "./ui/button"
+import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "./ui/button";
 import UsernameMenu from "./UsernameMenu";
 
 const MainNav = () => {
@@ -15,9 +15,7 @@ const MainNav = () => {
           className="font-bold hover:text-orange-500 hover:bg-white"
           onClick={async () =>
             await loginWithRedirect({
-              appState: {
-                returnTo: window.location.pathname, // ⬅ save current page
-              },
+              appState: { returnTo: window.location.pathname },
             })
           }
         >
@@ -29,3 +27,4 @@ const MainNav = () => {
 };
 
 export default MainNav;
+

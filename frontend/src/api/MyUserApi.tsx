@@ -211,6 +211,7 @@ export const useCreateMyUser = () => {
 
   return { createUser, isPending };
 };*/
+import type { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
 import type { User } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -222,7 +223,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // GET My User
 // -----------------------------
 export const useGetMyUser = (email?: string) => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
 
   const getMyUserRequest = async (): Promise<User> => {
     const accessToken = await getAccessTokenSilently();
@@ -251,8 +252,9 @@ export const useGetMyUser = (email?: string) => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["fetchCurrentUser"],
+    queryKey: ["fetchCurrentUser", user?.email],
     queryFn: getMyUserRequest,
+    enabled: !!email,
   });
 
   if (error) {
@@ -312,17 +314,24 @@ export const useCreateMyUser = () => {
 export const useUpdateMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const updateMyUserRequest = async (formData: FormData) => {
+  const updateMyUserRequest = async (data: UserFormData) => {
     const accessToken = await getAccessTokenSilently();
 
-    const response = await fetch(`${API_BASE_URL}/api/my/user`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        // No Content-Type here; browser sets it for FormData
-      },
-      body: formData,
-    });
+    if (!data.email) {
+      throw new Error("Email is required to update user");
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/my/user?email=${encodeURIComponent(data.email)}`, // 👈 add email in query
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json", // 👈 use JSON, not FormData
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to update user");

@@ -1,8 +1,13 @@
+// UserProfilePage.tsx
+import { useAuth0 } from "@auth0/auth0-react";
 import { useGetMyUser, useUpdateMyUser } from "@/api/MyUserApi";
 import UserProfileForm, { type UserFormData } from "@/forms/user-profile-form/UserProfileForm";
 
 const UserProfilePage = () => {
-  const { currentUser, isLoading: isGetLoading } = useGetMyUser();
+  const { user } = useAuth0();
+  const email = user?.email;
+
+  const { currentUser, isLoading: isGetLoading } = useGetMyUser(email);
   const { updateUser, isPending: isUpdateLoading } = useUpdateMyUser();
 
   if (isGetLoading) {
@@ -14,17 +19,8 @@ const UserProfilePage = () => {
   }
 
   const handleSave = (data: UserFormData) => {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("addressLine1", data.addressLine1);
-    formData.append("city", data.city);
-    formData.append("country", data.country);
-
-    if (data.email) {
-      formData.append("email", data.email);
-    }
-
-    updateUser(formData);
+    // ✅ Just send the object directly
+    updateUser(data);
   };
 
   return (
