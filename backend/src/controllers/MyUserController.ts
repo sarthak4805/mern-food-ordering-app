@@ -3,8 +3,13 @@ import User from "../models/user";
 
 export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const currentUser = await User.findOne({ _id: req.userId });
+    const email = req.query.email as string;
+    if (!email) {
+      res.status(400).json({ message: "Email is required" });
+      return;
+    }
 
+    const currentUser = await User.findOne({ email });
     if (!currentUser) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -16,6 +21,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
 
 
 
@@ -45,15 +51,17 @@ export const createCurrentUser = async (
 };
 
 // Update the existing user's info
-export const updateCurrentUser = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
   try {
+    const email = req.query.email as string;
+    if (!email) {
+      res.status(400).json({ message: "Email is required" });
+      return;
+    }
+
     const { name, addressLine1, city, country } = req.body;
 
-    const user = await User.findById(req.userId);
-
+    const user = await User.findOne({ email });
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -65,7 +73,7 @@ export const updateCurrentUser = async (
     user.country = country;
 
     await user.save();
-    res.status(200).json(user); // User updated
+    res.status(200).json(user);
   } catch (error) {
     console.error("Update user error:", error);
     res.status(500).json({ message: "Error updating user" });
